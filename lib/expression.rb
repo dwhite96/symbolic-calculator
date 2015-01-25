@@ -27,6 +27,6 @@ class Expression
         stack.push(operands[0].send(token, operands[1]))
       end
     end
-    stack
+    stack.pop
   end
 end
