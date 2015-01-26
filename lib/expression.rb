@@ -19,14 +19,27 @@ class Expression
         token = token.to_sym
         if bindings.include?(token)
           stack.push(bindings[token])
+        else
+          stack.push(token.to_s)
         end
-      when /\d/
+      when /\d+/
         stack.push(token.to_i)
       when "+", "-", "*", "/"
         operands = stack.pop(2)
-        stack.push(operands[0].send(token, operands[1]))
+        if operands.all? { |i| i.to_s.match(/\d+/) } == true
+          stack.push(operands[0].send(token, operands[1]))
+        elsif operands.any? { |i| i == 0 } == true
+          if token == "*"
+            stack.push(0)
+          else token == "+" || "-"
+            operands = operands - [0]
+            stack.push(operands)
+          end
+        else
+          stack.push(operands[0], operands[1], token)
+        end
       end
     end
-    stack.pop
+    stack.join(" ")
   end
 end
