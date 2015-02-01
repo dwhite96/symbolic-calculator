@@ -1,6 +1,6 @@
 class UndefinedVariableError < StandardError; end
 
-class Expression
+class Expression < Base
 
   # Returns a new expression
   def initialize(expr)
@@ -15,43 +15,18 @@ class Expression
     stack = []
     @expr.split.each do |token|
       case token
-      when /[a-z]+/
-        token = token.to_sym
-        # Convert variable to integer value if included in bindings hash
-        if bindings.include?(token)
-          stack.push(bindings[token])
-        else
-          stack.push(token.to_s)
-        end
-      when /\d+/
-        stack.push(token.to_i)
+      when /\A\d+\z/
+        number = Number.new(token.to_i)
+        stack.push(number)
       when "+", "-", "*", "/"
-        operands = stack.pop(2)
-        # Perform arithmetic operation if both operands are integers
-        if operands.all? { |i| i.to_s.match(/\d+/) }
-          stack.push(operands[0].send(token, operands[1]))
-        # Handle zeros correctly
-        elsif operands.any? { |i| i == 0 }
-          if token == "*"
-            stack.push(0)
-          elsif token == "+"
-            operands.delete(0)
-            stack.push(operands[0])
-          else token == "-"
-            if operands[0] == 0
-              operands.delete(0)
-              stack.push("-" + operands[0])
-            else operands[1] == 0
-              operands.delete(0)
-              stack.push(operands[0])
-            end
-          end
-        # Push algebraic expression onto stack
-        else
-          stack.push(operands[0], operands[1], token)
+        left = stack.pop(1)
+        right = stack.pop(1)
+        if "+"
+          value.add(left, right)
         end
       end
     end
-    stack.join(" ")
+    stack.pop
   end
+
 end
