@@ -1,6 +1,8 @@
+require "binary_tree"
+
 class UndefinedVariableError < StandardError; end
 
-class Expression < Base
+class Expression < BinaryTree
 
   # Returns a new expression
   def initialize(expr)
@@ -16,14 +18,12 @@ class Expression < Base
     @expr.split.each do |token|
       case token
       when /\A\d+\z/
-        number = Number.new(token.to_i)
+        number = Number.new(token)
         stack.push(number)
-      when "+", "-", "*", "/"
-        left = stack.pop(1)
+      when "+"
         right = stack.pop(1)
-        if "+"
-          value.add(left, right)
-        end
+        left = stack.pop(1)
+        value.add(left, right)
       end
     end
     stack.pop

@@ -1,8 +1,9 @@
-class Number
-  attr_accessor :number
+require "expression"
 
-  def initialize
-    @number = number
+class Number < Expression
+
+  def initialize(number)
+    @number = number.to_i
   end
 
 end
